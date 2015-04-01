@@ -1,0 +1,8 @@
+
+Scripts for building distro package repository mirrors
+
+debmirror-public-repos.sh	Mirror APT repos with debmirror
+debmirror-setup.sh		Setup debmirror app
+public-oracle.repo
+reposync-local.sh		Mirror YUM repo with reposync
+rsync-public-repos.sh		Mirror any repo type via rsync
