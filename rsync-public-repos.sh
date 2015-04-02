@@ -32,21 +32,23 @@ fi
 mirror () {
   # Args: repo, mirror site, excludes
   local REPO=$1
-  local MIRROR_Site=$2
-  local MIRROR_Exclude=$3
+  local rsync_module=$2
+  local MIRROR_Site=$3
+  local MIRROR_Exclude=$4
   local Repo_Name=$REPO
   local MIRROR_DST="${MIRROR_DIR}/${REPO}"
-  local MIRROR_SRC="${MIRROR_Site}::${REPO}"
+  local MIRROR_SRC="${MIRROR_Site}::${rsync_module}"
   local MIRROR_LOG=$LOG_DIR/mirror.${REPO}.log
   local DATERUN=`/bin/date +%Y-%m-%d`
 
   if [ -n "$MIRROR_Exclude" ]; then
     local exclude_list=$(echo $MIRROR_Exclude | tr ' ' '\n' | uniq | sed 's/^/--exclude=/' | tr '\n' ' ')
-    exclude_list="--delete_excluded ${exclude_list}"
+    exclude_list="--delete-excluded ${exclude_list}"
   else
     exclude_list=''
   fi
   echo "Mirroring of $Repo_Name repo on $HOSTNAME started at `$DATE '+%Y-%m-%d %H:%M:%S'`" > $MIRROR_LOG
+  echo "CMD: rsync -avzH --stats --delete --partial-dir=$PARTIAL_DIR $exclude_list ${MIRROR_SRC} ${MIRROR_DST}" >> $MIRROR_LOG 2>&1
   rsync -avzH --stats --delete --partial-dir=$PARTIAL_DIR $exclude_list ${MIRROR_SRC} ${MIRROR_DST} >> $MIRROR_LOG 2>&1
   echo "Mirroring of $Repo_Name repo finished at `$DATE '+%Y-%m-%d %H:%M:%S'`" >> $MIRROR_LOG
   mail -s "RSYNC: $Repo_Name Updates on $DATERUN" $MAIL_ADDR < $MIRROR_LOG
@@ -55,19 +57,19 @@ mirror () {
 for M in $mirror_repos; do
   case $M in
     centos)
-      mirror 'centos' 'mirrors.kernel.org' "'/[234]*' dostools/ graphics/ HEADER.images/ apt/ build/ contrib/ csgfs/ docs/ fasttrack/ isos/ testing/ SRPMS/ alpha/ ia64/ s390/ s390x/ i386/ ppc/"
+      mirror 'centos' centos 'mirrors.kernel.org' "'/[234]*' dostools/ graphics/ HEADER.images/ apt/ build/ contrib/ csgfs/ docs/ fasttrack/ isos/ testing/ SRPMS/ alpha/ ia64/ s390/ s390x/ i386/ ppc/"
     ;;
     debian)
-      mirror 'debian' 'mirrors.kernel.org' ""
+      mirror 'debian' debian 'mirrors.kernel.org' ""
     ;;
     epel)
-      mirror 'epel' 'mirrors.kernel.org' "4\*/ beta/ testing/ ppc/ ppc64/ i386/ SRPMS/ debug/ repoview/"
+      mirror 'epel' fedora-epel 'mirrors.kernel.org' "4\*/ beta/ testing/ ppc/ ppc64/ i386/ SRPMS/ debug/ repoview/"
     ;;
     opensuse)
-      mirror 'opensuse' 'mirrors.kernel.org' "'/10.*' '/factory*' delta/ 'i[56]86/' iso/ src/ '*-test/'"
+      mirror 'opensuse' opensuse 'mirrors.kernel.org' "'/10.*' '/factory*' delta/ 'i[56]86/' iso/ src/ '*-test/'"
     ;;
     ubuntu)
-      mirror 'ubuntu' 'mirrors.kernel.org' ""
+      mirror 'ubuntu' ubuntu 'mirrors.kernel.org' ""
     ;;
     *)
       echo "Unknown repo '$M' to mirror"
