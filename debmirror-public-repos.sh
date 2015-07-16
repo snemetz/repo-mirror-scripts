@@ -5,7 +5,7 @@
 # Author: Steven Nemetz
 # snemetz@hotmail.com
 
-MAIL_ADDR="snemetz@hortonworks.com"
+MAIL_ADDR="<user>@<company>.com"
 mirror_repos='debian ubuntu'
 dir_repo=/data
 dir_mirrors=${dir_repo}/mirror
