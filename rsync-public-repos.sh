@@ -9,7 +9,7 @@
 #	make email optional
 #	make logs optional
 
-MAIL_ADDR="snemetz@hortonworks.com"
+MAIL_ADDR="<user>@<company>.com"
 REPO_DIR=/data
 DATE=/bin/date
 MIRROR_DIR=$REPO_DIR/mirror
